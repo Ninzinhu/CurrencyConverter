@@ -14,7 +14,14 @@ type RateResponse struct {
 }
 
 func getRates(w http.ResponseWriter, r *http.Request) {
-    response, err := http.Get("https://api.exchangerate-api.com/v4/latest/USD")
+    vars := mux.Vars(r)
+    baseCurrency := vars["baseCurrency"]
+    if baseCurrency == "" {
+        baseCurrency = "USD" // Padrão para USD se não especificado
+    }
+    url := "https://api.exchangerate-api.com/v4/latest/" + baseCurrency
+
+    response, err := http.Get(url)
     if err != nil {
         http.Error(w, "Erro ao obter taxas de câmbio", http.StatusInternalServerError)
         return
@@ -32,7 +39,7 @@ func getRates(w http.ResponseWriter, r *http.Request) {
 
 func main() {
     r := mux.NewRouter()
-    r.HandleFunc("/api/rates", getRates).Methods("GET")
+    r.HandleFunc("/api/rates/{baseCurrency}", getRates).Methods("GET")
 
     http.Handle("/", r)
     log.Println("Servidor rodando na porta 8080")

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Moedas</title>
+
+</head>
+<body>
+    <div class="converter-container">
+        <h1>Conversor de Moedas</h1>
+        
+        <div class="input-group">
+            <label for="amount">Valor:</label>
+            <input type="number" id="amount" placeholder="Digite o valor" step="0.01" min="0">
+        </div>
+
+        <div class="currency-selectors">
+            <div class="input-group">
+                <label for="fromCurrency">De:</label>
+                <select id="fromCurrency">
+                    <option value="BRL">Real Brasileiro (BRL)</option>
+                    <option value="USD">Dólar Americano (USD)</option>
+                    <option value="EUR">Euro (EUR)</option>
+                    <option value="JPY">Iene Japonês (JPY)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="toCurrency">Para:</label>
+                <select id="toCurrency">
+                    <option value="USD">Dólar Americano (USD)</option>
+                    <option value="BRL">Real Brasileiro (BRL)</option>
+                    <option value="EUR">Euro (EUR)</option>
+                    <option value="JPY">Iene Japonês (JPY)</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="convertBtn">Converter</button>
+
+        <div class="result">
+            <h2 id="resultText">Resultado: <span id="convertedValue">-</span></h2>
+        </div>
+    </div>
+
+    <script>
+        
+    </script>
+</body>
+</html>

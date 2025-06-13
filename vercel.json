@@ -4,18 +4,10 @@
       "runtime": "@vercel/go"
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/rates/(.*)",
-      "dest": "/api/rates?base=$1"
-    },
-    {
-      "src": "/api/rates",
-      "dest": "/api/rates"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/web/$1"
+      "source": "/api/rates/(.*)",
+      "destination": "/api/rates?base=$1"
     }
   ],
   "headers": [

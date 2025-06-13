@@ -1,0 +1,40 @@
+{
+  "functions": {
+    "api/*.go": {
+      "runtime": "@vercel/go"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/rates/(.*)",
+      "dest": "/api/rates?base=$1"
+    },
+    {
+      "src": "/api/rates",
+      "dest": "/api/rates"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/web/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type"
+        }
+      ]
+    }
+  ]
+}

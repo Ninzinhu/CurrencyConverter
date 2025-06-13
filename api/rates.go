@@ -1,11 +1,10 @@
-package main
+package handler
 
 import (
 	"encoding/json"
-	"log"
-	"net/http"
 	"io/ioutil"
-	"github.com/gorilla/mux"
+	"net/http"
+	"strings"
 )
 
 type RateResponse struct {
@@ -13,32 +12,33 @@ type RateResponse struct {
 	Base  string             `json:"base"`
 }
 
-// Configura CORS para todas as rotas
-func enableCORS(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// Handler principal para a Vercel
+func Handler(w http.ResponseWriter, r *http.Request) {
+	// Configura CORS
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-		
-		// Headers CORS essenciais
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-		// Responde imediatamente para requisições OPTIONS (pré-flight)
-		if r.Method == "OPTIONS" {
-			return
-		}
-
-		handler.ServeHTTP(w, r)
-	})
-}
-
-func getRates(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	baseCurrency := vars["baseCurrency"]
-	if baseCurrency == "" {
-		baseCurrency = "BRL"
+	// Responde para requisições OPTIONS (pré-flight)
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
 	}
 
+	// Extrai a moeda base da URL
+	// URL será: /api/rates?base=USD ou /api/rates/USD
+	baseCurrency := r.URL.Query().Get("base")
+	if baseCurrency == "" {
+		// Tenta extrair da path
+		path := strings.TrimPrefix(r.URL.Path, "/api/rates/")
+		if path != "" && path != "/api/rates" {
+			baseCurrency = path
+		} else {
+			baseCurrency = "BRL" // Default
+		}
+	}
+
+	// Chama a API externa
 	url := "https://api.exchangerate-api.com/v4/latest/" + baseCurrency
 	response, err := http.Get(url)
 	if err != nil {
@@ -61,21 +61,4 @@ func getRates(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(rates)
-}
-
-func main() {
-	r := mux.NewRouter()
-
-	// API
-	r.HandleFunc("/api/rates/{baseCurrency}", getRates).Methods("GET", "OPTIONS")
-
-	// Frontend estático (HTML/CSS/JS)
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./web")))
-
-	// Aplica CORS a todas as rotas
-	handler := enableCORS(r)
-
-	// Inicia o servidor
-	log.Println("Servidor rodando na porta 8080")
-	log.Fatal(http.ListenAndServe(":8080", handler))
 }

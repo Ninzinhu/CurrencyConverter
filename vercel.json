@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "api/*.go": {
-      "runtime": "@vercel/go"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/rates/(.*)",
